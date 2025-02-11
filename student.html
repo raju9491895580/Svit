@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Bus</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Select Your Bus</h1>
+        <button onclick="selectBus(1)">Bus No. 1</button>
+        <button onclick="selectBus(2)">Bus No. 2</button>
+        <button onclick="selectBus(3)">Bus No. 3</button>
+        <button onclick="selectBus(4)">Bus No. 4</button>
+        <button onclick="selectBus(5)">Bus No. 5</button>
+        <button onclick="selectBus(6)">Bus No. 6</button>
+        <button onclick="selectBus(7)">Bus No. 7</button>
+        <button onclick="selectBus(8)">Bus No. 8</button>
+        <button onclick="selectBus(9)">Bus No. 9</button>
+        <button onclick="selectBus(10)">Bus No. 10</button>
+        <button onclick="selectBus(11)">Bus No. 11</button>
+        <button onclick="selectBus(12)">Bus No. 12</button>
+        <button onclick="selectBus(13)">Bus No. 13</button>
+        <button onclick="selectBus(14)">Bus No. 14</button>
+        <button onclick="selectBus(15)">Bus No. 15</button>
+        <button onclick="selectBus(16)">Bus No. 16</button>
+        <button onclick="selectBus(17)">Bus No. 17</button>
+        <button onclick="selectBus(18)">Bus No. 18</button>
+        <button onclick="selectBus(19)">Bus No. 19</button>
+        <button onclick="selectBus(20)">Bus No. 20</button>
+    </div>
+
+    <script>
+        function selectBus(busNumber) {
+            localStorage.setItem("selectedBus", busNumber);
+            window.location.href = "tracking.html";
+        }
+    </script>
+</body>
+</html>
+<script>
+    function loadDriverLocation() {
+        let driverLoc = JSON.parse(localStorage.getItem("driverLocation"));
+        if (driverLoc) {
+            L.marker([driverLoc.lat, driverLoc.lon]).addTo(map)
+                .bindPopup("Bus Location").openPopup();
+            map.setView([driverLoc.lat, driverLoc.lon], 15);
+        }
+    }
+
+    setInterval(loadDriverLocation, 5000); // Update every 5 sec
+</script>

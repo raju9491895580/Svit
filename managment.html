@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Management Panel</h1>
+
+        <!-- Add Student -->
+        <h2>Add Student</h2>
+        <input type="text" id="studentID" placeholder="Enter Student ID">
+        <input type="password" id="studentPassword" placeholder="Enter Student Password">
+        <select id="busNumber">
+            <option value="">Select Bus</option>
+            <script>
+                for (let i = 1; i <= 20; i++) {
+                    document.write(`<option value="Bus ${i}">Bus ${i}</option>`);
+                }
+            </script>
+        </select>
+        <button onclick="addStudent()">Add Student</button>
+
+        <!-- Add Driver -->
+        <h2>Add Driver</h2>
+        <input type="text" id="driverID" placeholder="Enter Driver ID">
+        <input type="password" id="driverPassword" placeholder="Enter Driver Password">
+        <input type="text" id="driverName" placeholder="Enter Driver Name">
+        <input type="text" id="driverPhone" placeholder="Enter Driver Phone Number">
+        <select id="driverBus">
+            <option value="">Assign to Bus</option>
+            <script>
+                for (let i = 1; i <= 20; i++) {
+                    document.write(`<option value="Bus ${i}">Bus ${i}</option>`);
+                }
+            </script>
+        </select>
+        <button onclick="addDriver()">Add Driver</button>
+
+        <!-- Announcements -->
+        <h2>Announcements</h2>
+        <textarea id="announcementText" placeholder="Enter Announcement"></textarea>
+        <button onclick="postAnnouncement()">Post Announcement</button>
+
+        <h2>Track a Bus</h2>
+        <button onclick="window.location.href='tracking.html'">Go to Tracking</button>
+    </div>
+
+    <script>
+        function addStudent() {
+            let studentID = document.getElementById("studentID").value;
+            let studentPassword = document.getElementById("studentPassword").value;
+            let busNumber = document.getElementById("busNumber").value;
+
+            if (studentID && studentPassword && busNumber) {
+                let students = JSON.parse(localStorage.getItem("students")) || [];
+
+                if (students.length >= 1000) {
+                    alert("Cannot add more than 1000 students.");
+                    return;
+                }
+
+                students.push({ studentID, studentPassword, busNumber });
+                localStorage.setItem("students", JSON.stringify(students));
+                alert(`Student ${studentID} added successfully to ${busNumber}!`);
+            } else {
+                alert("Please enter all details.");
+            }
+        }
+
+        function addDriver() {
+            let driverID = document.getElementById("driverID").value;
+            let driverPassword = document.getElementById("driverPassword").value;
+            let driverName = document.getElementById("driverName").value;
+            let driverPhone = document.getElementById("driverPhone").value;
+            let driverBus = document.getElementById("driverBus").value;
+
+            if (driverID && driverPassword && driverName && driverPhone && driverBus) {
+                let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
+
+                if (drivers.length >= 20) {
+                    alert("Cannot add more than 20 drivers.");
+                    return;
+                }
+
+                drivers.push({ driverID, driverPassword, driverName, driverPhone, driverBus });
+                localStorage.setItem("drivers", JSON.stringify(drivers));
+                alert(`Driver ${driverName} assigned to ${driverBus} successfully!`);
+            } else {
+                alert("Please enter all details.");
+            }
+        }
+
+        function postAnnouncement() {
+            let announcement = document.getElementById("announcementText").value;
+            localStorage.setItem("announcement", announcement);
+            alert("Announcement posted successfully!");
+        }
+    </script>
+</body>
+</html>
+<h2>Manage Drivers</h2>
+<input type="text" id="driverID" placeholder="Enter Driver ID">
+<button onclick="addDriver()">Add Driver</button>
+<button onclick="removeDriver()">Remove Driver</button>
+<h3>Registered Drivers:</h3>
+<ul id="driverList"></ul>
+
+<script>
+    // Load existing drivers from localStorage
+    function loadDrivers() {
+        let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
+        let list = document.getElementById("driverList");
+        list.innerHTML = "";  // Clear list
+        drivers.forEach(driver => {
+            let li = document.createElement("li");
+            li.textContent = driver;
+            list.appendChild(li);
+        });
+    }
+
+    // Add a driver
+    function addDriver() {
+        let driverID = document.getElementById("driverID").value;
+        if (!driverID) {
+            alert("Enter a valid Driver ID!");
+            return;
+        }
+        let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
+        if (!drivers.includes(driverID)) {
+            drivers.push(driverID);
+            localStorage.setItem("drivers", JSON.stringify(drivers));
+            alert("Driver added successfully!");
+        } else {
+            alert("Driver ID already exists!");
+        }
+        loadDrivers(); // Refresh list
+    }
+
+    // Remove a driver
+    function removeDriver() {
+        let driverID = document.getElementById("driverID").value;
+        let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
+        let index = drivers.indexOf(driverID);
+        if (index !== -1) {
+            drivers.splice(index, 1);
+            localStorage.setItem("drivers", JSON.stringify(drivers));
+            alert("Driver removed!");
+        } else {
+            alert("Driver ID not found!");
+        }
+        loadDrivers(); // Refresh list
+    }
+
+    // Load drivers when page opens
+    loadDrivers();
+</script>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Bus Tracking</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+</head>
+<body>
+    <div class="container">
+        <h1>Live Bus Tracking</h1>
+        <input type="text" id="studentLogin" placeholder="Enter Student ID">
+        <button onclick="checkAccess()">Login</button>
+
+        <div id="busSelection" style="display:none;">
+            <h2>Select a Bus</h2>
+            <select id="busNumber">
+                <option value="">Select Bus</option>
+                <!-- Generate options for up to 20 buses -->
+                <script>
+                    for (let i = 1; i <= 20; i++) {
+                        document.write(`<option value="Bus ${i}">Bus ${i}</option>`);
+                    }
+                </script>
+            </select>
+            <button onclick="startTracking()">Track Bus</button>
+        </div>
+
+        <div id="map" style="width: 100%; height: 500px; display:none;"></div>
+        <p id="busStatus">Waiting for bus location...</p>
+    </div>
+
+    <script>
+        let map, busMarker;
+
+        function checkAccess() {
+            let studentID = document.getElementById("studentLogin").value;
+            let students = JSON.parse(localStorage.getItem("students")) || [];
+
+            let studentData = students.find(student => student.studentID === studentID);
+
+            if (!studentData) {
+                alert("Access denied! You are not a registered student.");
+                return;
+            }
+
+            document.getElementById("busSelection").style.display = "block";
+        }
+
+        function startTracking() {
+            let busNumber = document.getElementById("busNumber").value;
+
+            if (!busNumber) {
+                alert("Please select a bus.");
+                return;
+            }
+
+            document.getElementById("map").style.display = "block";
+
+            map = L.map('map').setView([20.5937, 78.9629], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            busMarker = L.marker([20.5937, 78.9629]).addTo(map).bindPopup(`${busNumber} Location`).openPopup();
+
+            setInterval(() => updateBusLocation(busNumber), 5000);
+        }
+
+        function updateBusLocation(busNumber) {
+            let busLocation = JSON.parse(localStorage.getItem(`bus_location_${busNumber}`));
+
+            if (busLocation) {
+                let { latitude, longitude } = busLocation;
+                busMarker.setLatLng([latitude, longitude]);
+                map.setView([latitude, longitude], 15);
+                document.getElementById("busStatus").innerText = `${busNumber} is at (${latitude}, ${longitude})`;
+            } else {
+                document.getElementById("busStatus").innerText = "Waiting for bus location...";
+            }
+        }
+    </script>
+</body>
+</html>
+<script>
+    function updateAdminMap() {
+        let driverLoc = JSON.parse(localStorage.getItem("driverLocation"));
+        if (driverLoc) {
+            let adminMarker = L.marker([driverLoc.lat, driverLoc.lon]).addTo(map)
+                .bindPopup("Bus Location").openPopup();
+            map.setView([driverLoc.lat, driverLoc.lon], 15);
+        }
+    }
+
+    setInterval(updateAdminMap, 5000);
+</script>
+function updateDriverLocation() {
+    fetch('your_backend_or_database_api') // Replace with your actual API or database
+        .then(response => response.json())
+        .then(data => {
+            if (data.latitude && data.longitude) {
+                // Update the map with the driver's location
+                driverMarker.setLatLng([data.latitude, data.longitude]);
+            }
+        })
+        .catch(error => console.error('Error fetching driver location:', error));
+}
+
+// Refresh the location every 5 seconds
+setInterval(updateDriverLocation, 5000);
